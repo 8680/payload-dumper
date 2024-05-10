@@ -1,0 +1,34 @@
+name: payload_dumper
+on:
+  workflow_dispatch:
+   inputs:
+      url:
+        description: "file path or url"
+        required: true
+        default: "warning"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: rm output
+        run: |
+              rm -rf output
+              rm -rf payload_dumper/__pycache__
+
+      - name: payload_dumper
+        run: |
+              pip install -r requirement.txt
+              python payload_dumper/dumper.py  --partitions init_boot ${{ github.event.inputs.url }}
+              
+      - name: Commit files
+        run: |
+              git config --local user.email "action@github.com"
+              git config --local user.name "GitHub Action"
+              git add .
+              git commit -m "update"
+              
+      - name: Push changes
+        uses: ad-m/github-push-action@master
