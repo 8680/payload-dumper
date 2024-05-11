@@ -5,13 +5,13 @@ on:
       url:
         description: "file path or url"
         required: true
-        default: "warning"
+        default: "url"
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: rm output
         run: |
@@ -21,10 +21,12 @@ jobs:
       - name: payload_dumper
         run: |
               pip install -r requirement.txt
-              python payload_dumper/dumper.py  --partitions init_boot ${{ github.event.inputs.url }}
+              python payload_dumper/dumper.py --partitions boot ${{ github.event.inputs.url }}
               
       - name: Commit files
         run: |
+              git lfs install
+              git lfs track "*.img"
               git config --local user.email "action@github.com"
               git config --local user.name "GitHub Action"
               git add .
